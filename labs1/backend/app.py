@@ -1,4 +1,6 @@
-from typing import List
+# app.py
+from contextlib import asynccontextmanager
+from typing import List, AsyncIterator
 
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.middleware.cors import CORSMiddleware
@@ -9,7 +11,16 @@ from sqlalchemy.future import select
 from database import AsyncSessionLocal, init_db
 from models import Task
 
-app = FastAPI(title="Task Tracker API")
+@asynccontextmanager
+async def lifespan(app: FastAPI) -> AsyncIterator[None]:
+    await init_db()
+    yield
+
+app = FastAPI(
+    title="Task Tracker API",
+    lifespan=lifespan
+)
+
 origins = [
     "http://localhost"
 ]
@@ -20,12 +31,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-@app.on_event("startup")
-async def on_startup():
-    await init_db()
-
 
 async def get_session() -> AsyncSession:
     async with AsyncSessionLocal() as session:
