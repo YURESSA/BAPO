@@ -23,7 +23,7 @@ jobs:
           pip install -r labs1/backend/requirements.txt
       - name: Run backend tests
         run: |
-          python -m pytest backend/tests/ -v
+          pytest labs1/backend/tests/ -v --tb=short
 
   docker-compose-build-and-push:
     runs-on: ubuntu-latest
