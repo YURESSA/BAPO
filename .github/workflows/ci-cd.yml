@@ -50,7 +50,5 @@ jobs:
       - name: Build and push images via Docker Compose
         run: |
           docker compose -f labs1/docker-compose.yml build
-          docker tag backend yuressa/bapo-labs1-backend:latest
-          docker push yuressa/bapo-labs1-backend:latest
-          docker tag frontend yuressa/bapo-labs1-frontend:latest
-          docker push yuressa/bapo-labs1-frontend:latest
+          docker compose -f labs1/docker-compose.yml push
+
