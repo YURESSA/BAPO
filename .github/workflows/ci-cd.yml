@@ -28,4 +28,5 @@ jobs:
 
       - name: Run tests
         run: |
-          pytest backend/tests/ -v --tb=short
+          pytest labs1/backend/tests/ -v --tb=short
+
