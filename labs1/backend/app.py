@@ -50,6 +50,7 @@ class TaskOut(TaskIn):
 async def get_tasks(session: AsyncSession = Depends(get_session)):
     result = await session.execute(select(Task))
     tasks = result.scalars().all()
+
     return [TaskOut(id=t.id, title=t.title, description=t.description) for t in tasks]
 
 
