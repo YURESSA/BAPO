@@ -1,14 +1,15 @@
 import os
 from enum import Enum
+
 from dotenv import load_dotenv
 
 from application.weather_service import WeatherService
 from infrastructure.providers.fake_provider import FakeWeatherProvider
+from infrastructure.repositories.cached_weather_repository import CachedWeatherRepository
 from labs2.infrastructure.providers.weatherapi_provider import WeatherAPIProvider
 from labs2.infrastructure.providers.weatherstack_provider import WeatherStackProvider
-from infrastructure.repositories.cached_weather_repository import CachedWeatherRepository
+from labs2.presentation.qt_ui import WeatherApp
 from presentation.console_ui import ConsoleUI
-
 
 PROVIDERS_CONFIG = {
     "weatherapi": {
@@ -23,20 +24,30 @@ PROVIDERS_CONFIG = {
     },
 }
 
-
 WeatherProviderEnum = Enum("WeatherProviderEnum", {k.upper(): k for k in PROVIDERS_CONFIG.keys()})
 
 
-def build_app(provider_name: WeatherProviderEnum = WeatherProviderEnum.WEATHERAPI, use_fake: bool = False):
+class UIEnum(Enum):
+    QT = ("qt", WeatherApp)
+    CONSOLE = ("console", ConsoleUI)
+
+    def __init__(self, label, ui_class):
+        self.label = label
+        self.ui_class = ui_class
+
+
+def build_app(provider_name: WeatherProviderEnum = WeatherProviderEnum.WEATHERAPI,
+              ui_type: UIEnum = UIEnum.CONSOLE,
+              use_fake: bool = False):
+    """Создает приложение с выбранным провайдером и UI."""
     load_dotenv()
 
     if use_fake:
         provider = FakeWeatherProvider()
     else:
-        provider_key = provider_name.value
-        config = PROVIDERS_CONFIG.get(provider_key)
+        config = PROVIDERS_CONFIG.get(provider_name.value)
         if not config:
-            raise ValueError(f"Unknown provider_name: {provider_key}")
+            raise ValueError(f"Unknown provider_name: {provider_name.value}")
 
         api_key = os.getenv(config["env"])
         if not api_key:
@@ -46,10 +57,15 @@ def build_app(provider_name: WeatherProviderEnum = WeatherProviderEnum.WEATHERAP
 
     repository = CachedWeatherRepository(provider=provider, ttl_seconds=120)
     service = WeatherService(repository=repository)
-    ui = ConsoleUI(service=service)
-    return ui
+
+    ui_class = ui_type.ui_class
+    return ui_class(service=service)
 
 
 if __name__ == "__main__":
-    ui = build_app(provider_name=WeatherProviderEnum.WEATHERSTACK)
+    ui = build_app(
+        provider_name=WeatherProviderEnum.WEATHERAPI,
+        ui_type=UIEnum.QT,
+        use_fake=False
+    )
     ui.run()

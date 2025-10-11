@@ -1,7 +1,7 @@
-class ConsoleUI:
-    def __init__(self, service):
-        self.service = service
+from labs2.domain.interfaces.weather_ui import WeatherUI
 
+
+class ConsoleUI(WeatherUI):
     def run(self):
         print("=== Weather App ===")
         try:
