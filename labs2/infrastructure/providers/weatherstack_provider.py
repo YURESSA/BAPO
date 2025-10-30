@@ -13,7 +13,7 @@ class WeatherStackProvider(WeatherProvider):
         params = {
             "access_key": self.api_key,
             "query": city,
-            "units": "m",  # метрическая система
+            "units": "m",
         }
         resp = requests.get(self.BASE_URL, params=params, timeout=10)
         resp.raise_for_status()
@@ -22,15 +22,13 @@ class WeatherStackProvider(WeatherProvider):
         current = data.get("current", {})
         location = data.get("location", {})
 
-        # Ветер: направление и скорость
-        wind_speed = current.get("wind_speed")  # км/ч
+        wind_speed = current.get("wind_speed")
         wind_degree = current.get("wind_degree")
         wind_dir = current.get("wind_dir")
 
-        # Осадки
         precip_mm = current.get("precip")
         rain_mm = precip_mm if precip_mm and precip_mm > 0 else None
-        snow_cm = None  # WeatherStack free API не даёт снег в см
+        snow_cm = None
 
         return WeatherData(
             city=location.get("name", city),
@@ -48,6 +46,6 @@ class WeatherStackProvider(WeatherProvider):
             rain_mm=rain_mm,
             snow_cm=snow_cm,
             is_day=bool(current.get("is_day") == "yes"),
-            sunrise=None,  # бесплатная версия API не возвращает
+            sunrise=None,
             sunset=None
         )

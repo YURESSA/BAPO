@@ -1,4 +1,3 @@
-from labs2.domain.entities.weather_data import WeatherData
 from labs2.domain.interfaces.weather_repository import WeatherRepository
 
 
@@ -9,10 +8,8 @@ class WeatherService:
     def get_weather_summary(self, city: str) -> str:
         w = self.repository.get_weather(city)
 
-        # Основная строка
         lines = [f"🌆 Погода в {w.city}: {w.temperature:.1f}°C, {w.description}"]
 
-        # Словарь "поле → текст с эмодзи"
         optional_fields = {
             "feels_like": ("🌡️ Ощущается как", lambda v: f"{v:.1f}°C"),
             "humidity": ("💧 Влажность", lambda v: f"{v}%"),
@@ -30,11 +27,9 @@ class WeatherService:
             if value is not None:
                 lines.append(f"{label}: {fmt(value)}")
 
-        # День/ночь
         if w.is_day is not None:
             lines.append("🌞 День" if w.is_day else "🌙 Ночь")
 
-        # Время восхода/заката
         if w.sunrise and w.sunset:
             lines.append(f"🌅 Восход: {w.sunrise}, 🌇 Закат: {w.sunset}")
 

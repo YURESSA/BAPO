@@ -24,7 +24,10 @@ PROVIDERS_CONFIG = {
     },
 }
 
-WeatherProviderEnum = Enum("WeatherProviderEnum", {k.upper(): k for k in PROVIDERS_CONFIG.keys()})
+
+class WeatherProviderEnum(str, Enum):
+    WEATHERAPI = "weatherapi"
+    WEATHERSTACK = "weatherstack"
 
 
 class UIEnum(Enum):
@@ -39,7 +42,6 @@ class UIEnum(Enum):
 def build_app(provider_name: WeatherProviderEnum = WeatherProviderEnum.WEATHERAPI,
               ui_type: UIEnum = UIEnum.CONSOLE,
               use_fake: bool = False):
-    """Создает приложение с выбранным провайдером и UI."""
     load_dotenv()
 
     if use_fake:
@@ -64,8 +66,8 @@ def build_app(provider_name: WeatherProviderEnum = WeatherProviderEnum.WEATHERAP
 
 if __name__ == "__main__":
     ui = build_app(
-        provider_name=WeatherProviderEnum.WEATHERAPI,
-        ui_type=UIEnum.QT,
+        provider_name=WeatherProviderEnum.WEATHERSTACK,
+        ui_type=UIEnum.CONSOLE,
         use_fake=False
     )
     ui.run()

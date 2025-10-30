@@ -12,7 +12,7 @@ class WeatherAPIProvider(WeatherProvider):
     def fetch_weather(self, city: str) -> WeatherData:
         params = {
             "key": self.api_key,
-            "q": city,  # Можно: "Moscow" или "55.75,37.61" или "auto:ip"
+            "q": city,
             "lang": "ru",
         }
         resp = requests.get(self.BASE_URL, params=params, timeout=10)
@@ -23,10 +23,8 @@ class WeatherAPIProvider(WeatherProvider):
         condition = current.get("condition", {})
         location = data.get("location", {})
 
-        # Определяем день/ночь
         is_day = bool(current.get("is_day", 1))
 
-        # Ветер: скорость и направление
         wind_speed = current.get("wind_kph")
         wind_degree = current.get("wind_degree")
         wind_dir = current.get("wind_dir")
@@ -47,6 +45,6 @@ class WeatherAPIProvider(WeatherProvider):
             rain_mm=current.get("precip_mm") if current.get("precip_mm", 0) > 0 else None,
             snow_cm=current.get("snow_cm") if current.get("snow_cm", 0) > 0 else None,
             is_day=is_day,
-            sunrise=None,  # WeatherAPI free current.json не возвращает время восхода/заката
+            sunrise=None,
             sunset=None
         )
