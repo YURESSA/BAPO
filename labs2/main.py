@@ -42,7 +42,6 @@ class UIEnum(Enum):
 def build_app(provider_name: WeatherProviderEnum = WeatherProviderEnum.WEATHERAPI,
               ui_type: UIEnum = UIEnum.CONSOLE,
               use_fake: bool = False):
-    load_dotenv()
 
     if use_fake:
         provider = FakeWeatherProvider()
@@ -65,9 +64,19 @@ def build_app(provider_name: WeatherProviderEnum = WeatherProviderEnum.WEATHERAP
 
 
 if __name__ == "__main__":
+    load_dotenv()
+
+    provider_str = os.getenv("PROVIDER_NAME", "weatherapi").lower()
+    ui_str = os.getenv("UI_TYPE", "console").lower()
+    use_fake_str = os.getenv("USE_FAKE", "false").lower()
+
+    provider_user = WeatherProviderEnum(provider_str)
+    ui_user = next((ui for ui in UIEnum if ui.label == ui_str), UIEnum.CONSOLE)
+    user_use_fake = use_fake_str in ("1", "true", "yes", "on")
+
     ui = build_app(
-        provider_name=WeatherProviderEnum.WEATHERSTACK,
-        ui_type=UIEnum.CONSOLE,
-        use_fake=False
+        provider_name=provider_user,
+        ui_type=ui_user,
+        use_fake=user_use_fake
     )
     ui.run()
